@@ -32,15 +32,17 @@ async function sbFetch(path, opts = {}) {
   }
 }
 
-//  Battlepasses
 async function fetchAllBattlepasses() {
-  return await sbFetch('battlepasses?order=start_date.desc') || [];
+  const now = new Date().toISOString();
+  return await sbFetch(
+    `battlepasses?is_active=eq.true&start_date=lte.${now}&end_date=gte.${now}&order=end_date.asc`
+  ) || [];
 }
 
 async function fetchActiveBattlepass() {
   const now = new Date().toISOString();
   const data = await sbFetch(
-    `battlepasses?is_active=eq.true&start_date=lte.${now}&end_date=gte.${now}&order=created_at.desc&limit=1`
+    `battlepasses?is_active=eq.true&start_date=lte.${now}&end_date=gte.${now}&order=end_date.asc&limit=1`
   );
   return data && data.length ? data[0] : null;
 }
