@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TTT Infinite Gauntlet</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="css/game.css"/>
+</head>
+<body>
+
+
+<!-- ══ SCREEN 1: CONNECT ══ -->
+<div class="screen active" id="s-connect">
+  <div class="arcade-grid"></div>
+  <div class="connect-inner">
+    <div class="crt-frame">
+      <div class="game-title">TIC TAC TOE</div>
+      <div class="game-subtitle">Infinite Gauntlet</div>
+
+      <div class="preview-board">
+        <div class="preview-cell x">X</div>
+        <div class="preview-cell"></div>
+        <div class="preview-cell o">O</div>
+        <div class="preview-cell"></div>
+        <div class="preview-cell x">X</div>
+        <div class="preview-cell"></div>
+        <div class="preview-cell o">O</div>
+        <div class="preview-cell"></div>
+        <div class="preview-cell x">X</div>
+      </div>
+
+      <!-- Active BP teaser -->
+      <div class="bp-banner" id="connect-bp-banner">
+        <div class="bp-banner-label"><i class="fa-solid fa-fire"></i> Active Battlepass</div>
+        <div class="bp-banner-name" id="connect-bp-name">—</div>
+        <div class="bp-banner-meta">
+          <span id="connect-bp-end"></span>
+          <span id="connect-bp-tiers"></span>
+        </div>
+      </div>
+
+      <div class="insert-coin"><i class="fa-solid fa-circle-dot"></i> Insert Coin</div>
+      <button class="btn-arcade" onclick="connectWallet()">
+        <i class="fa-solid fa-wallet"></i> Connect Phantom
+      </button>
+      <button class="btn-ghost" onclick="playAsGuest()">
+        <i class="fa-solid fa-ghost"></i> Play as Guest
+      </button>
+    </div>
+    <div class="connect-note">
+      <i class="fa-solid fa-lock"></i> &nbsp;Scores on Solana &nbsp;|&nbsp; NFT badges for milestones
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 2: BATTLEPASS SELECT ══ -->
+<div class="screen" id="s-bp-select">
+  <div class="arcade-grid"></div>
+  <div class="bp-select-inner" style="margin-top:56px">
+    <div class="bp-select-title">Choose Battlepass</div>
+    <div class="bp-select-sub">Compete in a season — ranked by XP earned</div>
+
+    <!-- List populated by ui.js -->
+    <div id="bp-select-list"></div>
+
+    <div class="bp-select-actions">
+      <button class="btn-arcade" onclick="confirmBPSelect()">
+        <i class="fa-solid fa-play"></i> Play Selected
+      </button>
+      <button class="btn-ghost" onclick="skipBPSelect()">
+        <i class="fa-solid fa-forward"></i> Skip
+      </button>
+    </div>
+
+    <button class="btn-ghost" style="margin-top:-6px" onclick="goToConnect()">
+      <i class="fa-solid fa-arrow-left"></i> Back
+    </button>
+  </div>
+</div>
+
+<!-- ══ SCREEN 3: GAME ══ -->
+<div class="screen" id="s-game">
+  <nav class="game-nav">
+    <button class="nav-menu-btn" onclick="goToConnect()">
+      <i class="fa-solid fa-house"></i> MENU
+    </button>
+    <div id="diff-display" class="diff-pill easy">Easy</div>
+    <div class="wallet-chip">
+      <div class="wallet-dot"></div>
+      <span id="wallet-display">Guest</span>
+    </div>
+  </nav>
+
+  <div class="game-body">
+
+    <!-- BP strip -->
+    <div class="bp-strip" id="bp-strip">
+      <div class="bp-strip-left">
+        <div class="bp-strip-season">Battlepass</div>
+        <div class="bp-strip-name" id="bp-strip-name">—</div>
+        <div class="bp-strip-change" onclick="goToBPSelect()">
+          <i class="fa-solid fa-arrows-rotate"></i> Change
+        </div>
+      </div>
+      <div class="bp-strip-right">
+        <div class="bp-strip-xp" id="bp-strip-xp">0</div>
+        <div class="bp-strip-xplabel">XP THIS SEASON</div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-val" id="level-display">1</div>
+        <div class="stat-label">Level</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="moves-display">3</div>
+        <div class="stat-label">Moves Left</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="best-display">0</div>
+        <div class="stat-label">Best</div>
+      </div>
+    </div>
+
+    <!-- Turn -->
+    <div class="turn-row">
+      <i class="fa-solid fa-circle-dot" id="turn-icon"></i>
+      <span id="turn-label" style="font-family:var(--fm);font-size:11px;letter-spacing:1px">YOUR TURN — X</span>
+    </div>
+
+    <!-- Board -->
+    <div class="board-wrap">
+      <div class="board" id="board">
+        <div class="cell" id="c0" onclick="playerMove(0)"></div>
+        <div class="cell" id="c1" onclick="playerMove(1)"></div>
+        <div class="cell" id="c2" onclick="playerMove(2)"></div>
+        <div class="cell" id="c3" onclick="playerMove(3)"></div>
+        <div class="cell" id="c4" onclick="playerMove(4)"></div>
+        <div class="cell" id="c5" onclick="playerMove(5)"></div>
+        <div class="cell" id="c6" onclick="playerMove(6)"></div>
+        <div class="cell" id="c7" onclick="playerMove(7)"></div>
+        <div class="cell" id="c8" onclick="playerMove(8)"></div>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="prog-wrap">
+      <div class="prog-row">
+        <span><i class="fa-solid fa-trophy" style="font-size:9px;margin-right:4px"></i> Progress to Grandmaster</span>
+        <span id="prog-text">0%</span>
+      </div>
+      <div class="prog-track">
+        <div class="prog-fill" id="prog-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Badges -->
+    <div class="badges-row">
+      <div class="badge-chip" id="badge-rookie">
+        <i class="fa-solid fa-medal b-icon"></i>
+        <div class="b-info"><div class="b-name">Rookie</div><div class="b-req">Lv 10</div></div>
+        <i class="fa-solid fa-lock b-status" id="badge-rookie-status"></i>
+      </div>
+      <div class="badge-chip" id="badge-tactician">
+        <i class="fa-solid fa-chess-knight b-icon"></i>
+        <div class="b-info"><div class="b-name">Tactician</div><div class="b-req">Lv 15</div></div>
+        <i class="fa-solid fa-lock b-status" id="badge-tactician-status"></i>
+      </div>
+      <div class="badge-chip" id="badge-grandmaster">
+        <i class="fa-solid fa-crown b-icon"></i>
+        <div class="b-info"><div class="b-name">Grand</div><div class="b-req">Lv 20</div></div>
+        <i class="fa-solid fa-lock b-status" id="badge-grandmaster-status"></i>
+      </div>
+    </div>
+
+    <!-- BP Tiers -->
+    <div class="bp-tiers-row" id="bp-tiers-row">
+      <div class="bp-tiers-label"><i class="fa-solid fa-fire"></i> &nbsp;Battlepass Rewards</div>
+      <div class="bp-tiers" id="bp-tiers"></div>
+    </div>
+
+    <button class="lb-open-btn" onclick="showLeaderboard()">
+      <i class="fa-solid fa-ranking-star"></i> Leaderboard
+    </button>
+  </div>
+</div>
+
+<!-- ══ OVERLAY: LEVEL WON ══ -->
+<div class="overlay" id="o-won">
+  <div class="panel">
+    <div class="panel-icon"><i class="fa-solid fa-star"></i></div>
+    <div class="panel-title win">Level Clear</div>
+    <div class="xp-award" id="xp-award-won"></div>
+    <div class="panel-sub" id="won-sub">Loading next level...</div>
+  </div>
+</div>
+
+<!-- ══ OVERLAY: GAME OVER ══ -->
+<div class="overlay" id="o-over">
+  <div class="panel">
+    <div class="panel-icon"><i class="fa-solid fa-skull"></i></div>
+    <div class="panel-title lose">Game Over</div>
+    <div class="panel-sub" id="over-reason">You ran out of moves</div>
+    <div class="panel-stats">
+      <div class="ps"><div class="ps-val" id="os-level">0</div><div class="ps-label">Level</div></div>
+      <div class="ps"><div class="ps-val" id="os-xp">0</div><div class="ps-label">XP</div></div>
+      <div class="ps"><div class="ps-val" id="os-best">0</div><div class="ps-label">Best</div></div>
+    </div>
+    <div class="badge-notice" id="badge-unlock-notice"></div>
+    <button class="btn-panel" onclick="retryGame()">
+      <i class="fa-solid fa-rotate-left"></i> Try Again
+    </button>
+    <button class="btn-panel-ghost" onclick="showLeaderboard()">
+      <i class="fa-solid fa-ranking-star"></i> Leaderboard
+    </button>
+    <button class="btn-panel-ghost" onclick="goToConnect()">
+      <i class="fa-solid fa-house"></i> Main Menu
+    </button>
+  </div>
+</div>
+
+<!-- ══ OVERLAY: BADGE POPUP ══ -->
+<div class="overlay" id="o-badge">
+  <div class="panel">
+    <div class="badge-popup-icon">
+      <i class="fa-solid fa-medal" id="badge-fa-icon"></i>
+    </div>
+    <div class="badge-tag">Achievement Unlocked</div>
+    <div class="panel-title" id="badge-title">Rookie Badge</div>
+    <div class="panel-sub" id="badge-desc">Your journey begins.</div>
+    <button class="btn-panel" id="claim-btn" onclick="claimBadge()">
+      <i class="fa-solid fa-wallet"></i> Claim NFT via Phantom
+    </button>
+    <span class="skip-link" onclick="onSkipBadge()">Skip for now</span>
+  </div>
+</div>
+
+<!-- ══ OVERLAY: LEADERBOARD ══ -->
+<div class="overlay" id="o-lb">
+  <div class="panel lb-panel">
+    <div class="lb-head">
+      <div class="lb-title">Leaderboard</div>
+      <button class="lb-close" onclick="closeOverlay('o-lb')">
+        <i class="fa-solid fa-xmark"></i> Close
+      </button>
+    </div>
+    <div class="lb-tabs">
+      <button class="lb-tab active" id="tab-global" onclick="switchLbTab('global')">
+        <i class="fa-solid fa-earth-africa"></i> Global
+      </button>
+      <button class="lb-tab" id="tab-bp" onclick="switchLbTab('bp')">
+        <i class="fa-solid fa-fire"></i> Battlepass
+      </button>
+    </div>
+    <div class="lb-bp-info" id="lb-bp-info"></div>
+    <div id="lb-list"></div>
+  </div>
+</div>
+
+<!-- JS — order matters -->
+<script src="js/config.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
